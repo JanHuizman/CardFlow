@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CardFlow — Copy multiple SD cards simultaneously into organised folders. Built for photographers, ecologists, filmmakers and anyone who handles large volumes of SD cards on Windows.">
+<meta name="keywords" content="SD card offloader, multi SD card copy, bulk SD card transfer, copy multiple SD cards at once, wildlife camera trap data offload, SD card batch copy software, Windows SD card tool">
+<title>CardFlow — Multi-SD Card Offloader for Windows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #0f3d72;
+    --blue:    #1a5fa8;
+    --blue2:   #2979c8;
+    --ice:     #e8eef7;
+    --ice2:    #f4f7fb;
+    --white:   #ffffff;
+    --text:    #1a2332;
+    --dim:     #5a6a80;
+    --border:  #ccd6e8;
+    --success: #1a7a4a;
+    --warn:    #c0392b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ice2);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(15,61,114,0.97);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem; font-weight: 700;
+    color: #fff; letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo svg { width: 26px; height: 26px; }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    color: rgba(255,255,255,0.75); font-size: 0.9rem;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-cta {
+    background: var(--blue2); color: #fff !important;
+    padding: 8px 20px; border-radius: 6px;
+    font-weight: 500; transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: #3a8ae0 !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--navy) 0%, #1a4a8a 55%, #1e6ab5 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 100px 5% 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.8rem; font-weight: 500;
+    padding: 5px 14px; border-radius: 20px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 700; color: #fff;
+    line-height: 1.1; letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    max-width: 800px;
+  }
+  .hero h1 span { color: #7eb8f5; }
+  .hero p {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgba(255,255,255,0.75);
+    max-width: 560px; margin: 0 auto 2.5rem;
+  }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn-primary {
+    background: #fff; color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    padding: 14px 32px; border-radius: 8px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .btn-secondary {
+    background: transparent; color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 500;
+    padding: 14px 32px; border-radius: 8px;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.07); }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 4rem;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat strong {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.9rem; font-weight: 700; color: #fff;
+  }
+  .hero-stat span { font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+
+  /* ── SD CARD SVG ILLUSTRATION ── */
+  .hero-visual {
+    margin-top: 3.5rem;
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .sd-card-visual {
+    width: 52px; height: 66px;
+    animation: float 3s ease-in-out infinite;
+  }
+  .sd-card-visual:nth-child(2) { animation-delay: 0.4s; }
+  .sd-card-visual:nth-child(3) { animation-delay: 0.8s; }
+  .sd-card-visual:nth-child(4) { animation-delay: 1.2s; }
+  .sd-card-visual:nth-child(5) { animation-delay: 1.6s; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 5%; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue2);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    font-weight: 700; color: var(--navy);
+    line-height: 1.2; letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .section-sub {
+    font-size: 1.05rem; color: var(--dim);
+    max-width: 540px; margin-bottom: 3rem;
+  }
+
+  /* ── FEATURES ── */
+  .features-bg { background: var(--white); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .feature-card {
+    background: var(--ice2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(26,95,168,0.1); }
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: var(--ice);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .feature-icon svg { width: 22px; height: 22px; stroke: var(--blue); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .feature-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    color: var(--navy); margin-bottom: 0.5rem;
+  }
+  .feature-card p { font-size: 0.92rem; color: var(--dim); line-height: 1.6; }
+
+  /* ── HOW IT WORKS ── */
+  .how-bg { background: var(--ice2); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; }
+  .step {
+    position: relative; padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem; color: var(--border);
+    display: none;
+  }
+  @media (min-width: 800px) { .step:not(:last-child)::after { display: block; } }
+  .step-num {
+    width: 48px; height: 48px;
+    background: var(--blue); color: #fff;
+    border-radius: 50%;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .step h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem; font-weight: 600;
+    color: var(--navy); margin-bottom: 0.4rem;
+  }
+  .step p { font-size: 0.88rem; color: var(--dim); }
+
+  /* ── USE CASES ── */
+  .use-bg { background: var(--white); }
+  .use-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .use-card {
+    background: var(--ice2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .use-card span:first-child { font-size: 1.5rem; }
+  .use-card strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.92rem; font-weight: 600; color: var(--navy);
+  }
+  .use-card small { font-size: 0.82rem; color: var(--dim); }
+
+  /* ── PRICING ── */
+  .price-bg { background: var(--navy); }
+  .price-card {
+    max-width: 480px; margin: 0 auto;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .price-card .price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem; font-weight: 700; color: #fff;
+    line-height: 1;
+  }
+  .price-card .price sup { font-size: 1.5rem; vertical-align: super; }
+  .price-card .price-sub { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin: 0.5rem 0 1.5rem; }
+  .price-features { list-style: none; text-align: left; margin-bottom: 2rem; }
+  .price-features li {
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .price-features li::before {
+    content: '✓';
+    color: #7eb8f5; font-weight: 700; flex-shrink: 0;
+  }
+  .trial-note {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.82rem; margin-top: 1rem;
+  }
+  .trial-note a { color: rgba(255,255,255,0.65); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #081d38;
+    padding: 2.5rem 5%;
+    text-align: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.85rem;
+  }
+  footer a { color: rgba(255,255,255,0.55); text-decoration: none; }
+  footer a:hover { color: #fff; }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 26 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 0H24C25.1 0 26 .9 26 2V32C26 33.1 25.1 34 24 34H2C.9 34 0 33.1 0 32V7L7 0Z" fill="white" opacity="0.9"/>
+      <path d="M0 7L7 0V7H0Z" fill="white" opacity="0.5"/>
+      <rect x="5" y="24" width="3" height="6" rx="1" fill="#1a5fa8"/>
+      <rect x="9.5" y="24" width="3" height="6" rx="1" fill="#1a5fa8"/>
+      <rect x="14" y="24" width="3" height="6" rx="1" fill="#1a5fa8"/>
+      <rect x="18.5" y="24" width="3" height="6" rx="1" fill="#1a5fa8"/>
+    </svg>
+    CardFlow
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://casvansichem.gumroad.com/l/CardFlow" class="nav-cta">Download</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Windows Software</div>
+  <h1>Offload <span>16 SD cards</span><br>in a single click</h1>
+  <p>CardFlow copies every card into its own named folder automatically — so you spend less time at your desk and more time doing the work that matters.</p>
+  <div class="hero-btns">
+    <a href="https://casvansichem.gumroad.com/l/CardFlow" class="btn-primary">Get CardFlow — €19.99</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>16</strong><span>Cards at once</span></div>
+    <div class="hero-stat"><strong>All</strong><span>File types</span></div>
+    <div class="hero-stat"><strong>1-yr</strong><span>License</span></div>
+    <div class="hero-stat"><strong>Free</strong><span>3-day trial</span></div>
+  </div>
+  <div class="hero-visual">
+    <!-- 5 SD card silhouettes -->
+    <svg class="sd-card-visual" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+      <path d="M14 0H50C51.1 0 52 .9 52 2V64C52 65.1 51.1 66 50 66H2C.9 66 0 65.1 0 64V14L14 0Z" fill="white" opacity="0.15"/>
+      <path d="M0 14L14 0V14H0Z" fill="white" opacity="0.08"/>
+      <rect x="9" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="18" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="27" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="36" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+    </svg>
+    <svg class="sd-card-visual" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+      <path d="M14 0H50C51.1 0 52 .9 52 2V64C52 65.1 51.1 66 50 66H2C.9 66 0 65.1 0 64V14L14 0Z" fill="white" opacity="0.15"/>
+      <path d="M0 14L14 0V14H0Z" fill="white" opacity="0.08"/>
+      <rect x="9" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="18" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="27" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="36" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+    </svg>
+    <svg class="sd-card-visual" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 0H50C51.1 0 52 .9 52 2V64C52 65.1 51.1 66 50 66H2C.9 66 0 65.1 0 64V14L14 0Z" fill="white" opacity="0.25"/>
+      <path d="M0 14L14 0V14H0Z" fill="white" opacity="0.12"/>
+      <rect x="9" y="48" width="6" height="12" rx="2" fill="white" opacity="0.6"/>
+      <rect x="18" y="48" width="6" height="12" rx="2" fill="white" opacity="0.6"/>
+      <rect x="27" y="48" width="6" height="12" rx="2" fill="white" opacity="0.6"/>
+      <rect x="36" y="48" width="6" height="12" rx="2" fill="white" opacity="0.6"/>
+    </svg>
+    <svg class="sd-card-visual" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+      <path d="M14 0H50C51.1 0 52 .9 52 2V64C52 65.1 51.1 66 50 66H2C.9 66 0 65.1 0 64V14L14 0Z" fill="white" opacity="0.15"/>
+      <path d="M0 14L14 0V14H0Z" fill="white" opacity="0.08"/>
+      <rect x="9" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="18" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="27" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="36" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+    </svg>
+    <svg class="sd-card-visual" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+      <path d="M14 0H50C51.1 0 52 .9 52 2V64C52 65.1 51.1 66 50 66H2C.9 66 0 65.1 0 64V14L14 0Z" fill="white" opacity="0.15"/>
+      <path d="M0 14L14 0V14H0Z" fill="white" opacity="0.08"/>
+      <rect x="9" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="18" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="27" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+      <rect x="36" y="48" width="6" height="12" rx="2" fill="white" opacity="0.4"/>
+    </svg>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-bg" id="features">
+  <div class="section-inner">
+    <p class="section-label reveal">Features</p>
+    <h2 class="section-title reveal">Everything you need, nothing you don't</h2>
+    <p class="section-sub reveal">Designed around a single workflow — get data off cards and into folders, fast.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h3>Up to 16 cards simultaneously</h3>
+        <p>Connect as many SD cards as your hub supports. Each slot copies independently — no waiting for one to finish before the next starts.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        </div>
+        <h3>Named destination folders</h3>
+        <p>Give each card its own folder name before copying. Your data lands exactly where you want it, already organised.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <h3>Auto-detects new cards</h3>
+        <p>Insert a card and CardFlow detects it within 2 seconds, assigns it to the next empty slot automatically. No manual setup needed.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>Safe re-runs — no duplicates</h3>
+        <p>Files that already exist at the destination are skipped. Run CardFlow again on the same cards without creating duplicates or overwriting data.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </div>
+        <h3>Clean &amp; eject after copy</h3>
+        <p>Once a perfect copy is confirmed, CardFlow can wipe and safely eject all cards with a two-step confirmation — ready for the next session.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3>All file types, all devices</h3>
+        <p>Works with any device that stores files on an SD card — cameras, drones, recorders, sensors. Preserves the original folder structure.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-bg" id="how">
+  <div class="section-inner">
+    <p class="section-label reveal">How it works</p>
+    <h2 class="section-title reveal">Four steps. That's it.</h2>
+    <p class="section-sub reveal">CardFlow is designed to get out of your way as quickly as possible.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <h3>Insert your cards</h3>
+        <p>CardFlow detects each card automatically and assigns it to a slot.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <h3>Name the folders</h3>
+        <p>Type a destination folder name for each card — or leave it to use the drive letter.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <h3>Choose output &amp; copy</h3>
+        <p>Select your output folder and press Copy. Progress is shown per slot in real time.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">4</div>
+        <h3>Done</h3>
+        <p>Your files are organised and ready. Optionally wipe and eject all cards in one click.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="use-bg">
+  <div class="section-inner">
+    <p class="section-label reveal">Who uses CardFlow</p>
+    <h2 class="section-title reveal">Built for anyone who handles lots of cards</h2>
+    <p class="section-sub reveal">Developed during field research at NIOO-KNAW, designed for the real world.</p>
+    <div class="use-grid">
+      <div class="use-card reveal">
+        <span>🦉</span>
+        <strong>Wildlife researchers</strong>
+        <small>Camera traps, acoustic sensors, field recorders</small>
+      </div>
+      <div class="use-card reveal">
+        <span>📷</span>
+        <strong>Photographers</strong>
+        <small>Event, wildlife, sports and commercial shoots</small>
+      </div>
+      <div class="use-card reveal">
+        <span>🎬</span>
+        <strong>Filmmakers</strong>
+        <small>Documentary, commercial and video production</small>
+      </div>
+      <div class="use-card reveal">
+        <span>🚁</span>
+        <strong>Drone operators</strong>
+        <small>Aerial survey, mapping and inspection</small>
+      </div>
+      <div class="use-card reveal">
+        <span>🌿</span>
+        <strong>Ecologists</strong>
+        <small>Environmental monitoring and data collection</small>
+      </div>
+      <div class="use-card reveal">
+        <span>🔬</span>
+        <strong>Field scientists</strong>
+        <small>Any discipline with remote sensor deployments</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="price-bg" id="pricing">
+  <div class="section-inner" style="text-align:center">
+    <p class="section-label reveal" style="color:#7eb8f5">Pricing</p>
+    <h2 class="section-title reveal" style="color:#fff">Simple, one-time pricing</h2>
+    <p class="section-sub reveal" style="color:rgba(255,255,255,0.55); margin:0 auto 2.5rem">No subscription. One payment, one year of use.</p>
+    <div class="price-card reveal">
+      <div class="price"><sup>€</sup>19.99</div>
+      <p class="price-sub">per year · Windows · instant activation</p>
+      <ul class="price-features">
+        <li>Up to 16 SD card slots</li>
+        <li>All file types supported</li>
+        <li>Auto card detection</li>
+        <li>Clean &amp; eject after copy</li>
+        <li>1-year license from activation date</li>
+        <li>Email support</li>
+      </ul>
+      <a href="https://casvansichem.gumroad.com/l/CardFlow" class="btn-primary" style="display:inline-block;width:100%;text-align:center">Get CardFlow</a>
+      <p class="trial-note">Want to try first? Email <a href="mailto:casvansichem@icloud.com">casvansichem@icloud.com</a> for a free 3-day trial key.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 CardFlow · Made by Cas van Sichem · <a href="mailto:casvansichem@icloud.com">casvansichem@icloud.com</a></p>
+  <p style="margin-top:6px"><a href="https://casvansichem.gumroad.com/l/CardFlow">Gumroad</a> · <a href="https://www.linkedin.com/feed/#">LinkedIn</a></p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
